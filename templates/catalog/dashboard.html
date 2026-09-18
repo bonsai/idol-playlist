@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ playlist.playlist_title }}</title>
+  <style>
+    body{font-family:system-ui,sans-serif;max-width:1100px;margin:auto;padding:24px;background:#f7f7f7;color:#222}
+    h1{margin-bottom:4px}.meta{color:#666;margin-bottom:24px}
+    .card{background:#fff;border-radius:14px;padding:16px;margin:12px 0;display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:center;box-shadow:0 1px 5px #ddd}
+    .rank{font-size:28px;font-weight:700;text-align:center}.title{font-size:20px;font-weight:700}.artist{color:#666}
+    .stats{font-size:13px;color:#666;margin-top:8px}.score{font-size:24px;font-weight:700}
+    a{color:inherit}.watch{display:inline-block;margin-top:8px}
+    @media(max-width:700px){.card{grid-template-columns:44px 1fr}.score{grid-column:2}}
+  </style>
+</head>
+<body>
+  <h1>{{ playlist.playlist_title }}</h1>
+  <div class="meta">{{ playlist.generated_at|default:"未生成" }} 更新｜{{ playlist.items|length }}曲</div>
+  {% for item in playlist.items %}
+  <article class="card">
+    <div class="rank">#{{ item.rank }}</div>
+    <div>
+      <div class="title">{{ item.title }}</div>
+      <div class="artist">{{ item.artist }}</div>
+      <div class="stats">ask {{ item.ask_count|default:0 }}｜lyrics {{ item.lyrics_view|default:0 }}｜YouTube {{ item.youtube_view|default:0 }}</div>
+      {% if item.youtube_video_id %}
+      <a class="watch" href="https://www.youtube.com/watch?v={{ item.youtube_video_id }}" target="_blank" rel="noopener">▶ YouTubeで見る</a>
+      {% endif %}
+    </div>
+    <div class="score">{{ item.score|default:0 }}</div>
+  </article>
+  {% empty %}
+  <p>まだランキングデータがありません。<code>aw run</code> を実行してください。</p>
+  {% endfor %}
+</body>
+</html>
