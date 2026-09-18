@@ -1,6 +1,8 @@
 name: idol-playlist
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
   schedule:
     - cron: "0 18 * * 0"
 
@@ -9,6 +11,7 @@ permissions:
 
 jobs:
   run:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,14 +21,23 @@ jobs:
       - run: pip install -e .
       - run: python manage.py migrate --noinput
       - run: aw run
-      - name: Commit weekly and monthly KPI history
+      - name: Generate 60-second test radio
+        run: aw radio-test
+      - name: Upload radio artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: idol-best-ten-test-60s
+          path: data/audio/test-60s.mp3
+          if-no-files-found: error
+          retention-days: 14
+      - name: Commit generated audio and KPI history
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rankings data/weekly data/monthly data/youtube/playlist.json
+          git add data/rankings data/weekly data/monthly data/youtube/playlist.json data/audio/test-60s.mp3
           if git diff --cached --quiet; then
             echo "No generated changes."
           else
-            git commit -m "data: update weekly top 10 and monthly KPI"
+            git commit -m "data: generate test radio audio"
             git push
           fi
