@@ -16,7 +16,7 @@ body{margin:0;background:#121212;color:#b3b3b3;font:14px Arial,sans-serif}
 .tabs{display:flex;gap:4px;margin-top:22px}.tab{background:transparent;border:0;color:#aaa;padding:8px 16px;font-weight:bold;cursor:pointer}.tab.active{color:#fff;border-bottom:2px solid #fff}
 .list{padding:8px 28px}.head,.track{display:grid;grid-template-columns:42px 1fr 100px 70px 90px;align-items:center;gap:10px}.head{border-bottom:1px solid #444;padding:8px 10px;color:#888;font-size:11px;text-transform:uppercase}.track{padding:9px 10px;border-radius:3px;cursor:pointer}.track:hover{background:#2a2a2a;color:#fff}.num{font-variant-numeric:tabular-nums;text-align:center}.name{color:#fff;font-weight:bold}.artist{font-size:12px;color:#999;margin-top:3px}.plays{text-align:right;font-variant-numeric:tabular-nums}.score{text-align:right;color:#fff;font-weight:bold}.links{display:flex;gap:5px;justify-content:flex-end}.links a{color:#ddd;text-decoration:none;border:1px solid #555;border-radius:3px;padding:3px 6px;font-size:11px}
 .player{grid-column:1/3;background:#181818;border-top:1px solid #282828;display:grid;grid-template-columns:220px 1fr 260px;align-items:center;padding:10px 18px;position:sticky;bottom:0}.now{min-width:0}.now b{color:#fff}.now small{display:block;margin-top:4px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.controls{text-align:center;color:#fff;font-size:24px}.controls button{background:none;border:0;color:#fff;cursor:pointer;font-size:22px;margin:0 9px}.bar{height:3px;background:#555;margin:5px auto;max-width:360px}.bar span{display:block;width:35%;height:100%;background:#fff}
-.volume{text-align:right;color:#aaa}.video{display:none;position:fixed;right:24px;bottom:96px;width:min(560px,calc(100vw - 48px));aspect-ratio:16/9;background:#000;z-index:20;box-shadow:0 8px 30px #000}.video iframe{width:100%;height:100%;border:0}.video button{position:absolute;right:0;top:-32px;background:#000;color:#fff;border:0;padding:6px 10px}
+.volume{text-align:right;color:#aaa}.service{margin:0 28px 18px;display:flex;gap:10px;flex-wrap:wrap}.service a{color:#fff;text-decoration:none;background:#282828;border:1px solid #444;padding:9px 14px;border-radius:4px}.service a:hover{background:#333}.spotify{display:none;margin:0 28px 18px;background:#000;border-radius:8px;overflow:hidden}.spotify iframe{width:100%;height:152px;border:0}.video{display:none;position:fixed;right:24px;bottom:96px;width:min(560px,calc(100vw - 48px));aspect-ratio:16/9;background:#000;z-index:20;box-shadow:0 8px 30px #000}.video iframe{width:100%;height:100%;border:0}.video button{position:absolute;right:0;top:-32px;background:#000;color:#fff;border:0;padding:6px 10px}
 @media(max-width:700px){body{font-size:13px}.app{grid-template-columns:1fr;grid-template-rows:auto 82px}.sidebar{display:none}.main{grid-column:1}.player{grid-column:1;grid-template-columns:1fr 1fr}.volume{display:none}.top{padding:22px 18px}.list{padding:8px 12px}.head,.track{grid-template-columns:32px 1fr 58px}.plays{display:none}.title{font-size:27px}}
 </style>
 </head>
@@ -39,7 +39,7 @@ body{margin:0;background:#121212;color:#b3b3b3;font:14px Arial,sans-serif}
 <button class="tab" data-period="year">Y 今年</button>
 </div>
 </header>
-<section class="list">
+<div class="service"><a id="ytPlaylist" href="#" target="_blank" rel="noopener" hidden>▶ YouTube Playlist</a><a id="spotifyOpen" href="#" target="_blank" rel="noopener" hidden>● Spotify</a></div><div class="spotify" id="spotifyPanel"><iframe id="spotifyFrame" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div><section class="list">
 <div class="head"><div>#</div><div>曲</div><div>再生</div><div>Score</div><div>LINK</div></div>
 <div id="tracks"></div>
 </section>
@@ -53,6 +53,8 @@ body{margin:0;background:#121212;color:#b3b3b3;font:14px Arial,sans-serif}
 </div>
 <script>
 const VIEW="spotify-old";
+const youtubePlaylistUrl="";
+const spotifyTrackUrls={};
 const songs=[
 ["うますぎる","pinponpanpon","LIZqyeTIE6Y",97,22100],["心中未遂","MADOROMI-マドロミ-","vFlfDfH4O40",95,20400],["プロット。","キングサリ","aOuQpvmLhGc",94,17800],["トベトベトべ","兎アイズ","6EzBz332Fg0",93,18700],["Kill my ENDROLL","9DayzGlitchClubTokyo","L8vvJcWxq64",91,15600],["曖昧妄想STORY-2026 ver-","metarium","4CyzYdwoHO4",90,14900],["スーパーモデルでGo!!","Tnaka","g-ayoPyL6sY",88,12400],["A・RA・WA","道玄坂69","yAIrcsxAIJw",86,10100],["Cry (2026 Remastered)","LEIWAN","GnCzzCCXpF0",84,11300],["ギミックアイ","兎アイズ","U4pK3q7XHZE",83,12400]];
 const factor={week:1,month:.94,year:.88};
@@ -67,8 +69,9 @@ function select(t){
  document.getElementById("play").textContent="❚❚";
  document.getElementById("progress").style.width="65%";
 }
+const ytp=document.getElementById("ytPlaylist"); if(youtubePlaylistUrl){ytp.href=youtubePlaylistUrl;ytp.hidden=false;} const so=document.getElementById("spotifyOpen");
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>render(b.dataset.period));
-document.getElementById("tracks").addEventListener("click",e=>{const t=e.target.closest(".track");if(!t)return;if(e.target.closest("a"))return;const id=t.dataset.yt;if(!id)return;document.getElementById("nowTitle").textContent=t.dataset.title;document.getElementById("nowArtist").textContent=t.dataset.artist;document.getElementById("yt").src="https://www.youtube.com/embed/"+id+"?autoplay=1";document.getElementById("video").style.display="block";document.getElementById("play").textContent="❚❚";});
+document.getElementById("tracks").addEventListener("click",e=>{const t=e.target.closest(".track");if(!t)return;if(e.target.closest("a"))return;const id=t.dataset.yt;if(!id)return;document.getElementById("nowTitle").textContent=t.dataset.title;document.getElementById("nowArtist").textContent=t.dataset.artist;document.getElementById("yt").src="https://www.youtube.com/embed/"+id+"?autoplay=1";document.getElementById("video").style.display="block";document.getElementById("play").textContent="❚❚"; const su=spotifyTrackUrls[t.dataset.title]; if(su){so.href=su;so.hidden=false;document.getElementById("spotifyFrame").src=su.replace("open.spotify.com/track/","open.spotify.com/embed/track/");document.getElementById("spotifyPanel").style.display="block";}});
 document.getElementById("close").onclick=()=>{document.getElementById("video").style.display="none";document.getElementById("yt").src="";};
 document.getElementById("play").onclick=()=>document.getElementById("play").textContent=document.getElementById("play").textContent==="▶"?"❚❚":"▶";
 render("week");
