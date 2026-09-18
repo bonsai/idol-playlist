@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import TypedDict
 
@@ -10,6 +10,8 @@ from langgraph.graph import END, START, StateGraph
 ROOT = Path(__file__).resolve().parents[1]
 CANDIDATES = ROOT / "data" / "music" / "2026" / "candidates.jsonl"
 RANKINGS_DIR = ROOT / "data" / "rankings"
+WEEKLY_DIR = ROOT / "data" / "weekly"
+MONTHLY_DIR = ROOT / "data" / "monthly"
 YOUTUBE_DIR = ROOT / "data" / "youtube"
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
@@ -22,6 +24,8 @@ class State(TypedDict, total=False):
     command: str
     songs: list[dict]
     rankings: list[dict]
+    weekly: list[dict]
+    monthly: list[dict]
     youtube: list[dict]
     playlist: list[dict]
     llm_enabled: bool
@@ -65,12 +69,100 @@ def llm_review(state: State):
     return {"llm_review": [{"song_id": s.get("track_id"), "status": "pending", "reason": "LLM provider not configured"} for s in state.get("songs", [])]}
 
 
+def _rank_songs(songs: list[dict]) -> list[dict]:
+    ranked = sorted(
+        songs,
+        key=lambda x: (
+            x.get("score", 0),
+            x.get("ask_count", 0),
+            x.get("lyrics_view", 0),
+            x.get("youtube_view", 0),
+        ),
+        reverse=True,
+    )
+    return [{**song, "rank": i + 1} for i, song in enumerate(ranked)]
+
+
 def rank(state: State):
-    songs = state.get("songs", [])
-    ranked = sorted(songs, key=lambda x: (x.get("score", 0), x.get("ask_count", 0), x.get("lyrics_view", 0), x.get("youtube_view", 0)), reverse=True)
-    rankings = [{**song, "rank": i + 1} for i, song in enumerate(ranked)]
+    rankings = _rank_songs(state.get("songs", []))
     _write_jsonl(RANKINGS_DIR / f"{date.today().isoformat()}.jsonl", rankings)
     return {"rankings": rankings}
+
+
+def weekly(state: State):
+    today = date.today()
+    week_start = today - timedelta(days=today.weekday())
+    week_end = week_start + timedelta(days=6)
+    week_key = week_start.strftime("%G-W%V")
+    top10 = [{**item, "weekly_rank": item["rank"]} for item in state.get("rankings", [])[:10]]
+    payload = {
+        "period": "weekly",
+        "week": week_key,
+        "start": week_start.isoformat(),
+        "end": week_end.isoformat(),
+        "generated_at": today.isoformat(),
+        "count": len(top10),
+        "items": top10,
+    }
+    _write_json(WEEKLY_DIR / f"{week_key}.json", payload)
+    return {"weekly": top10}
+
+
+def monthly(state: State):
+    today = date.today()
+    month_key = today.strftime("%Y-%m")
+    history = []
+    for path in sorted(WEEKLY_DIR.glob(f"{today.year}-W*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        if payload.get("start", "")[:7] == month_key or payload.get("end", "")[:7] == month_key:
+            history.extend(payload.get("items", []))
+
+    by_song = {}
+    for item in history:
+        song_id = item.get("track_id")
+        if not song_id:
+            continue
+        entry = by_song.setdefault(
+            song_id,
+            {
+                "song_id": song_id,
+                "song": item.get("title", item.get("song", "")),
+                "idol": item.get("artist", item.get("idol", "")),
+                "appearances": 0,
+                "score_total": 0,
+                "best_rank": None,
+                "ask_count": item.get("ask_count", 0),
+                "lyrics_view": item.get("lyrics_view", 0),
+                "youtube_view": item.get("youtube_view", 0),
+                "youtube_video_id": item.get("youtube_video_id", ""),
+            },
+        )
+        entry["appearances"] += 1
+        entry["score_total"] += item.get("score", 0)
+        rank_value = item.get("weekly_rank")
+        if rank_value is not None:
+            entry["best_rank"] = rank_value if entry["best_rank"] is None else min(entry["best_rank"], rank_value)
+
+    items = list(by_song.values())
+    for item in items:
+        item["average_score"] = round(item["score_total"] / item["appearances"], 2)
+    items.sort(key=lambda x: (x["average_score"], x["appearances"], -(x["best_rank"] or 999)), reverse=True)
+
+    for rank_value, item in enumerate(items, 1):
+        item["monthly_rank"] = rank_value
+
+    payload = {
+        "period": "monthly",
+        "month": month_key,
+        "generated_at": today.isoformat(),
+        "count": len(items),
+        "items": items,
+    }
+    _write_json(MONTHLY_DIR / f"{month_key}.json", payload)
+    return {"monthly": items}
 
 
 def persist(state: State):
@@ -106,12 +198,14 @@ def playlist(state: State):
 
 def build_workflow():
     graph = StateGraph(State)
-    for name, fn in [("collect", collect), ("llm_review", llm_review), ("rank", rank), ("persist", persist), ("youtube_match", youtube_match), ("playlist", playlist)]:
+    for name, fn in [("collect", collect), ("llm_review", llm_review), ("rank", rank), ("weekly", weekly), ("monthly", monthly), ("persist", persist), ("youtube_match", youtube_match), ("playlist", playlist)]:
         graph.add_node(name, fn)
     graph.add_edge(START, "collect")
     graph.add_conditional_edges("collect", should_use_llm, {"llm": "llm_review", "skip": "rank"})
     graph.add_edge("llm_review", "rank")
-    graph.add_edge("rank", "persist")
+    graph.add_edge("rank", "weekly")
+    graph.add_edge("weekly", "monthly")
+    graph.add_edge("monthly", "persist")
     graph.add_edge("persist", "youtube_match")
     graph.add_edge("youtube_match", "playlist")
     graph.add_edge("playlist", END)
