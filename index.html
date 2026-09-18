@@ -3,77 +3,48 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>アイドルベストテン by オシャレコMUSIC</title><!-- view: spotify-old -->
+<title>アイドルベストテン by オシャレコMUSIC</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#121212;color:#b3b3b3;font:14px Arial,sans-serif}
-.app{min-height:100vh;display:grid;grid-template-columns:220px 1fr;grid-template-rows:1fr 82px}
-.sidebar{background:#000;padding:24px 16px;grid-row:1/2}
-.logo{font-size:20px;color:#fff;font-weight:bold;margin-bottom:28px}.nav div{padding:10px 8px;color:#aaa}.nav .active{color:#fff;background:#282828;border-radius:3px}
-.playlists{margin-top:28px;border-top:1px solid #282828;padding-top:18px;font-size:12px}.playlists b{display:block;color:#fff;margin-bottom:12px}
-.main{background:linear-gradient(#282828,#181818 260px);overflow:auto;padding-bottom:100px}
-.top{padding:28px 34px 18px}.crumb{font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.12em}.title{font-size:34px;color:#fff;font-weight:bold;margin:12px 0 4px}.sub{font-size:13px}
-.tabs{display:flex;gap:4px;margin-top:22px}.tab{background:transparent;border:0;color:#aaa;padding:8px 16px;font-weight:bold;cursor:pointer}.tab.active{color:#fff;border-bottom:2px solid #fff}
-.list{padding:8px 28px}.head,.track{display:grid;grid-template-columns:42px 1fr 100px 70px 90px;align-items:center;gap:10px}.head{border-bottom:1px solid #444;padding:8px 10px;color:#888;font-size:11px;text-transform:uppercase}.track{padding:9px 10px;border-radius:3px;cursor:pointer}.track:hover{background:#2a2a2a;color:#fff}.num{font-variant-numeric:tabular-nums;text-align:center}.name{color:#fff;font-weight:bold}.artist{font-size:12px;color:#999;margin-top:3px}.plays{text-align:right;font-variant-numeric:tabular-nums}.score{text-align:right;color:#fff;font-weight:bold}.links{display:flex;gap:5px;justify-content:flex-end}.links a{color:#ddd;text-decoration:none;border:1px solid #555;border-radius:3px;padding:3px 6px;font-size:11px}
-.player{grid-column:1/3;background:#181818;border-top:1px solid #282828;display:grid;grid-template-columns:220px 1fr 260px;align-items:center;padding:10px 18px;position:sticky;bottom:0}.now{min-width:0}.now b{color:#fff}.now small{display:block;margin-top:4px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.controls{text-align:center;color:#fff;font-size:24px}.controls button{background:none;border:0;color:#fff;cursor:pointer;font-size:22px;margin:0 9px}.bar{height:3px;background:#555;margin:5px auto;max-width:360px}.bar span{display:block;width:35%;height:100%;background:#fff}
-.volume{text-align:right;color:#aaa}.service{margin:0 28px 18px;display:flex;gap:10px;flex-wrap:wrap}.service a{color:#fff;text-decoration:none;background:#282828;border:1px solid #444;padding:9px 14px;border-radius:4px}.service a:hover{background:#333}.spotify{display:none;margin:0 28px 18px;background:#000;border-radius:8px;overflow:hidden}.spotify iframe{width:100%;height:152px;border:0}.video{display:none;position:fixed;right:24px;bottom:96px;width:min(560px,calc(100vw - 48px));aspect-ratio:16/9;background:#000;z-index:20;box-shadow:0 8px 30px #000}.video iframe{width:100%;height:100%;border:0}.video button{position:absolute;right:0;top:-32px;background:#000;color:#fff;border:0;padding:6px 10px}
-@media(max-width:700px){body{font-size:13px}.app{grid-template-columns:1fr;grid-template-rows:auto 82px}.sidebar{display:none}.main{grid-column:1}.player{grid-column:1;grid-template-columns:1fr 1fr}.volume{display:none}.top{padding:22px 18px}.list{padding:8px 12px}.head,.track{grid-template-columns:32px 1fr 58px}.plays{display:none}.title{font-size:27px}}
+body{margin:0;background:#121212;color:#b3b3b3;font:18px Arial,sans-serif}
+.app{min-height:100vh;display:grid;grid-template-columns:220px 1fr}
+.sidebar{background:#000;padding:24px 16px}.logo{font-size:22px;color:#fff;font-weight:bold;margin-bottom:28px}.nav div{padding:12px 8px;color:#aaa}.nav .active{color:#fff;background:#282828;border-radius:5px}.playlists{margin-top:28px;border-top:1px solid #282828;padding-top:18px}.playlists b{display:block;color:#fff;margin-bottom:12px}
+.main{background:linear-gradient(#282828,#181818 320px);min-height:100vh;padding-bottom:40px}
+.top{padding:32px 36px 22px}.crumb{font-size:14px;color:#aaa;text-transform:uppercase;letter-spacing:.12em}.title{font-size:42px;color:#fff;font-weight:bold;margin:12px 0 4px}.sub{font-size:17px;margin-top:4px}
+.tabs{display:flex;gap:8px;margin-top:24px}.tab{background:#282828;border:1px solid #555;color:#ddd;padding:14px 24px;font-size:18px;font-weight:bold;cursor:pointer;border-radius:6px}.tab.active{background:#fff;color:#111;border-color:#fff}
+.watch{margin:0 36px 20px;background:#000;border-radius:10px;overflow:hidden;box-shadow:0 8px 28px #000}.watch iframe{display:block;width:100%;aspect-ratio:16/9;border:0}.watch-placeholder{display:flex;align-items:center;justify-content:center;min-height:240px;color:#aaa;font-size:22px}
+.watch-title{padding:14px 18px;color:#fff;font-weight:bold;font-size:20px}.watch-artist{color:#aaa;font-size:16px;font-weight:normal;margin-left:10px}
+.operations{margin:0 36px 24px;display:flex;gap:12px;flex-wrap:wrap}.operations button,.operations a{appearance:none;background:#282828;color:#fff;border:1px solid #555;border-radius:7px;padding:15px 24px;font-size:19px;font-weight:bold;text-decoration:none;cursor:pointer}.operations button:hover,.operations a:hover{background:#3a3a3a}.operations .primary{background:#fff;color:#111;border-color:#fff}
+.audio{margin:0 36px 24px;background:#202020;border-radius:8px;padding:16px}.audio b{display:block;color:#fff;font-size:20px;margin-bottom:10px}.audio audio{width:100%;height:52px}
+.list{padding:8px 28px}.head,.track{display:grid;grid-template-columns:52px 1fr 120px 80px 110px;align-items:center;gap:12px}.head{border-bottom:1px solid #444;padding:12px;color:#888;font-size:14px;text-transform:uppercase}.track{padding:15px 12px;border-radius:5px;cursor:pointer}.track:hover{background:#2a2a2a;color:#fff}.num{font-variant-numeric:tabular-nums;text-align:center;font-size:20px}.name{color:#fff;font-weight:bold;font-size:20px}.artist{font-size:16px;color:#999;margin-top:4px}.plays{text-align:right;font-variant-numeric:tabular-nums;font-size:17px}.score{text-align:right;color:#fff;font-weight:bold;font-size:19px}.links{display:flex;gap:7px;justify-content:flex-end}.links a{color:#fff;text-decoration:none;border:1px solid #666;border-radius:5px;padding:7px 10px;font-size:14px;font-weight:bold}
+@media(max-width:700px){body{font-size:17px}.sidebar{display:none}.top{padding:24px 16px 18px}.title{font-size:34px}.sub{font-size:18px}.tabs{gap:6px}.tab{flex:1;padding:16px 8px;font-size:18px}.watch,.operations,.audio{margin-left:16px;margin-right:16px}.watch-placeholder{min-height:190px;font-size:19px}.watch-title{font-size:19px}.operations{display:grid;grid-template-columns:1fr 1fr}.operations button,.operations a{min-height:58px;padding:12px 8px;font-size:18px;text-align:center}.audio audio{height:54px}.list{padding:8px 10px}.head,.track{grid-template-columns:38px 1fr 70px}.head{padding:10px 6px}.track{padding:15px 6px}.plays{display:none}.name{font-size:19px}.artist{font-size:15px}.score{font-size:18px}.links{display:none}}
 </style>
 </head>
 <body>
 <div class="app">
-<aside class="sidebar">
-<div class="logo">◉ OSYAREKO<br>MUSIC</div>
-<div class="nav"><div>⌂ ホーム</div><div class="active">♫ プレイリスト</div><div>🔍 検索</div></div>
-<div class="playlists"><b>PLAYLIST</b><div>地下アイドル</div><div>アイドルベストテン</div><div>2026 BEST 100</div></div>
-</aside>
+<aside class="sidebar"><div class="logo">◉ OSYAREKO<br>MUSIC</div><div class="nav"><div>⌂ ホーム</div><div class="active">♫ プレイリスト</div><div>🔍 検索</div></div><div class="playlists"><b>PLAYLIST</b><div>地下アイドル</div><div>アイドルベストテン</div><div>2026 BEST 100</div></div></aside>
 <main class="main">
-<header class="top">
-<div class="crumb">OSYAREKO MUSIC / IDOL RANKING</div>
-<div class="title">アイドルベストテン</div>
-<div class="sub">by オシャレコMUSIC</div>
-<div class="sub">地下アイドル｜最大30曲</div>
-<div class="tabs">
-<button class="tab active" data-period="week">W 今週</button>
-<button class="tab" data-period="month">M 今月</button>
-<button class="tab" data-period="year">Y 今年</button>
-</div>
-</header>
-<div class="service"><a id="ytPlaylist" href="#" target="_blank" rel="noopener" hidden>▶ YouTube Playlist</a><a id="spotifyOpen" href="#" target="_blank" rel="noopener" hidden>● Spotify</a></div><div class="spotify" id="spotifyPanel"><iframe id="spotifyFrame" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div><section class="list">
-<div class="head"><div>#</div><div>曲</div><div>再生</div><div>Score</div><div>LINK</div></div>
-<div id="tracks"></div>
-</section>
+<header class="top"><div class="crumb">OSYAREKO MUSIC / IDOL RANKING</div><div class="title">アイドルベストテン</div><div class="sub">by オシャレコMUSIC</div><div class="sub">地下アイドル｜最大30曲</div><div class="tabs"><button class="tab active" data-period="week">W 今週</button><button class="tab" data-period="month">M 今月</button><button class="tab" data-period="year">Y 今年</button></div></header>
+<section class="watch" id="watch"><div class="watch-placeholder">曲を選ぶとここでYouTubeを視聴できます</div><div class="watch-title" id="watchTitle">アイドルベストテン <span class="watch-artist" id="watchArtist">by オシャレコMUSIC</span></div></section>
+<section class="operations" aria-label="操作"><button class="primary" id="playBtn">▶ 再生</button><button id="prev">‹ 前へ</button><button id="next">次へ ›</button><button id="close">■ 閉じる</button><a id="ytPlaylist" href="#" target="_blank" rel="noopener" hidden>▶ YT Playlist</a><a id="spotifyOpen" href="#" target="_blank" rel="noopener" hidden>● Spotify</a></section>
+<section class="audio"><b>🎙 今週のAI番組</b><audio id="narration" controls preload="metadata" src="data/audio/2026-W38.mp3"></audio></section>
+<section class="list"><div class="head"><div>#</div><div>曲</div><div>再生</div><div>Score</div><div>LINK</div></div><div id="tracks"></div></section>
 </main>
-<footer class="player">
-<div class="now"><b id="nowTitle">アイドルベストテン</b><small id="nowArtist">by オシャレコMUSIC</small></div>
-<div class="controls"><button id="prev">‹</button><button id="play">▶</button><button id="next">›</button><div class="bar"><span id="progress"></span></div></div>
-<div class="volume">🔊 ━━━━━</div>
-</footer>
-<div class="video" id="video"><button id="close">×</button><iframe id="yt" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
 </div>
 <script>
-const VIEW="spotify-old";
 const youtubePlaylistUrl="";
-const spotifyTrackUrls={};
-const songs=[
-["うますぎる","pinponpanpon","LIZqyeTIE6Y",97,22100],["心中未遂","MADOROMI-マドロミ-","vFlfDfH4O40",95,20400],["プロット。","キングサリ","aOuQpvmLhGc",94,17800],["トベトベトべ","兎アイズ","6EzBz332Fg0",93,18700],["Kill my ENDROLL","9DayzGlitchClubTokyo","L8vvJcWxq64",91,15600],["曖昧妄想STORY-2026 ver-","metarium","4CyzYdwoHO4",90,14900],["スーパーモデルでGo!!","Tnaka","g-ayoPyL6sY",88,12400],["A・RA・WA","道玄坂69","yAIrcsxAIJw",86,10100],["Cry (2026 Remastered)","LEIWAN","GnCzzCCXpF0",84,11300],["ギミックアイ","兎アイズ","U4pK3q7XHZE",83,12400]];
+const songs=[["うますぎる","pinponpanpon","LIZqyeTIE6Y",97,22100],["心中未遂","MADOROMI-マドロミ-","vFlfDfH4O40",95,20400],["プロット。","キングサリ","aOuQpvmLhGc",94,17800],["トベトベトべ","兎アイズ","6EzBz332Fg0",93,18700],["Kill my ENDROLL","9DayzGlitchClubTokyo","L8vvJcWxq64",91,15600],["曖昧妄想STORY-2026 ver-","metarium","4CyzYdwoHO4",90,14900],["スーパーモデルでGo!!","Tnaka","g-ayoPyL6sY",88,12400],["A・RA・WA","道玄坂69","yAIrcsxAIJw",86,10100],["Cry (2026 Remastered)","LEIWAN","GnCzzCCXpF0",84,11300],["ギミックアイ","兎アイズ","U4pK3q7XHZE",83,12400]];
 const factor={week:1,month:.94,year:.88};
-function render(period){
- document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.period===period));
- document.getElementById("tracks").innerHTML=songs.slice(0,30).map((s,i)=>'<div class="track" data-yt="'+s[2]+'" data-title="'+s[0]+'" data-artist="'+s[1]+'"><div class="num">'+String(i+1).padStart(2,"0")+'</div><div><div class="name">'+s[0]+'</div><div class="artist">'+s[1]+'</div></div><div class="plays">'+Math.round(s[4]*factor[period]).toLocaleString()+'</div><div class="score">'+Math.round(s[3]*factor[period])+'</div><div class="links">'+(s[2]?'<a href="https://www.youtube.com/watch?v='+s[2]+'" target="_blank">YT</a>':'')+'<a href="https://open.spotify.com/search/'+encodeURIComponent(s[1]+" "+s[0])+'" target="_blank">SP</a></div></div>').join("");
- 
-}
-function select(t){
- document.getElementById("nowTitle").textContent=t.dataset.title;
- document.getElementById("nowArtist").textContent=t.dataset.artist;
- document.getElementById("play").textContent="❚❚";
- document.getElementById("progress").style.width="65%";
-}
-const ytp=document.getElementById("ytPlaylist"); if(youtubePlaylistUrl){ytp.href=youtubePlaylistUrl;ytp.hidden=false;} const so=document.getElementById("spotifyOpen");
+let current=0;
+function render(period){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.period===period));document.getElementById("tracks").innerHTML=songs.slice(0,30).map((s,i)=>'<div class="track" data-index="'+i+'"><div class="num">'+String(i+1).padStart(2,"0")+'</div><div><div class="name">'+s[0]+'</div><div class="artist">'+s[1]+'</div></div><div class="plays">'+Math.round(s[4]*factor[period]).toLocaleString()+'</div><div class="score">'+Math.round(s[3]*factor[period])+'</div><div class="links"><a href="https://www.youtube.com/watch?v='+s[2]+'" target="_blank" rel="noopener">YT</a><a href="https://open.spotify.com/search/'+encodeURIComponent(s[1]+" "+s[0])+'" target="_blank" rel="noopener">SP</a></div></div>').join("")}
+function select(i,autoplay=true){current=(i+songs.length)%songs.length;const s=songs[current];document.getElementById("watch").innerHTML='<iframe src="https://www.youtube.com/embed/'+s[2]+'?autoplay='+(autoplay?1:0)+'" title="'+s[0]+'" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe><div class="watch-title">'+s[0]+' <span class="watch-artist">'+s[1]+'</span></div>';document.getElementById("playBtn").textContent="❚❚ 再生中"}
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>render(b.dataset.period));
-document.getElementById("tracks").addEventListener("click",e=>{const t=e.target.closest(".track");if(!t)return;if(e.target.closest("a"))return;const id=t.dataset.yt;if(!id)return;document.getElementById("nowTitle").textContent=t.dataset.title;document.getElementById("nowArtist").textContent=t.dataset.artist;document.getElementById("yt").src="https://www.youtube.com/embed/"+id+"?autoplay=1";document.getElementById("video").style.display="block";document.getElementById("play").textContent="❚❚"; const su=spotifyTrackUrls[t.dataset.title]; if(su){so.href=su;so.hidden=false;document.getElementById("spotifyFrame").src=su.replace("open.spotify.com/track/","open.spotify.com/embed/track/");document.getElementById("spotifyPanel").style.display="block";}});
-document.getElementById("close").onclick=()=>{document.getElementById("video").style.display="none";document.getElementById("yt").src="";};
-document.getElementById("play").onclick=()=>document.getElementById("play").textContent=document.getElementById("play").textContent==="▶"?"❚❚":"▶";
+document.getElementById("tracks").addEventListener("click",e=>{const t=e.target.closest(".track");if(!t||e.target.closest("a"))return;select(Number(t.dataset.index));});
+document.getElementById("prev").onclick=()=>select(current-1);
+document.getElementById("next").onclick=()=>select(current+1);
+document.getElementById("playBtn").onclick=()=>select(current,true);
+document.getElementById("close").onclick=()=>{document.getElementById("watch").innerHTML='<div class="watch-placeholder">曲を選ぶとここでYouTubeを視聴できます</div><div class="watch-title">アイドルベストテン <span class="watch-artist">by オシャレコMUSIC</span></div>';document.getElementById("playBtn").textContent="▶ 再生"};
+if(youtubePlaylistUrl){const a=document.getElementById("ytPlaylist");a.href=youtubePlaylistUrl;a.hidden=false;}
 render("week");
 </script>
 </body>
