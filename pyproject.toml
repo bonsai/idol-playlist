@@ -13,6 +13,7 @@ dependencies = [
   "langchain-core>=1,<2",
   "langchain-community>=0.4,<1",
   "google-cloud-bigquery>=3,<4",
+  "gTTS>=2.5,<3",
 ]
 
 [tool.setuptools.packages.find]
