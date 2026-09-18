@@ -1,4 +1,4 @@
-name: deploy idol-playlist
+name: idol-playlist-pages
 
 on:
   workflow_dispatch:
@@ -15,7 +15,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
   build:
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,13 +31,10 @@ jobs:
       - name: Install
         run: pip install -e .
 
-      - name: Check Django migrations
-        run: python manage.py makemigrations --check --dry-run
-
       - name: Migrate Django
         run: python manage.py migrate --noinput
 
-      - name: Generate playlist HTML data
+      - name: Generate playlist data
         run: aw run
 
       - name: Upload Pages artifact
