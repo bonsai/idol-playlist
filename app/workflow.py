@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import date
 from pathlib import Path
 from typing import TypedDict
 
@@ -8,6 +9,8 @@ from langgraph.graph import END, START, StateGraph
 
 ROOT = Path(__file__).resolve().parents[1]
 CANDIDATES = ROOT / "data" / "music" / "2026" / "candidates.jsonl"
+RANKINGS_DIR = ROOT / "data" / "rankings"
+YOUTUBE_DIR = ROOT / "data" / "youtube"
 
 
 class State(TypedDict, total=False):
@@ -24,11 +27,35 @@ def _read_jsonl(path: Path) -> list[dict]:
     if not path.exists():
         return []
     rows = []
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line_number, line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(), start=1
+    ):
         line = line.strip()
-        if line:
+        if not line:
+            continue
+        try:
             rows.append(json.loads(line))
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"Invalid JSONL: {path}:{line_number}: {exc.msg}"
+            ) from exc
     return rows
+
+
+def _write_jsonl(path: Path, rows: list[dict]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
+        encoding="utf-8",
+    )
+
+
+def _write_json(path: Path, value: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
 def collect(state: State):
@@ -43,15 +70,15 @@ def should_use_llm(state: State) -> str:
 
 
 def llm_review(state: State):
-    # LLM integration point. Keep this branch dependency-free so AW works
-    # locally without an API key or model service.
     reviews = []
     for song in state.get("songs", []):
-        reviews.append({
-            "song_id": song.get("song_id"),
-            "status": "pending",
-            "reason": "LLM provider not configured",
-        })
+        reviews.append(
+            {
+                "song_id": song.get("track_id"),
+                "status": "pending",
+                "reason": "LLM provider not configured",
+            }
+        )
     return {"llm_review": reviews}
 
 
@@ -67,20 +94,39 @@ def rank(state: State):
         ),
         reverse=True,
     )
-    return {"rankings": [{**song, "rank": i + 1} for i, song in enumerate(ranked)]}
+    rankings = [{**song, "rank": i + 1} for i, song in enumerate(ranked)]
+    _write_jsonl(
+        RANKINGS_DIR / f"{date.today().isoformat()}.jsonl",
+        rankings,
+    )
+    return {"rankings": rankings}
 
 
 def youtube_match(state: State):
-    return {
-        "youtube": [
-            {**song, "youtube_video_id": song.get("youtube_video_id")}
-            for song in state.get("rankings", [])
-        ]
-    }
+    matches = [
+        {
+            **song,
+            "youtube_video_id": song.get("youtube_video_id"),
+            "youtube_match_status": (
+                "matched" if song.get("youtube_video_id") else "unmatched"
+            ),
+        }
+        for song in state.get("rankings", [])
+    ]
+    _write_json(
+        YOUTUBE_DIR / "playlist.json",
+        {
+            "playlist_title": "地下アイドル｜聞かれる曲 TOP100",
+            "generated_at": date.today().isoformat(),
+            "items": matches,
+        },
+    )
+    return {"youtube": matches}
 
 
 def playlist(state: State):
-    return {"playlist": state.get("youtube", [])}
+    playlist_items = state.get("youtube", [])
+    return {"playlist": playlist_items}
 
 
 def build_workflow():
