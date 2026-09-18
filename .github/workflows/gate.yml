@@ -1,0 +1,40 @@
+name: idol-playlist-gate
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install
+        run: pip install -e .
+
+      - name: Check migrations
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Validate Django
+        run: python manage.py check
+
+      - name: Migrate Django
+        run: python manage.py migrate --noinput
+
+      - name: Run AW
+        run: aw run
+
+      - name: Verify playlist output
+        run: |
+          test -f data/youtube/playlist.json
+          test -s data/youtube/playlist.json
