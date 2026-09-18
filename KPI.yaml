@@ -1,0 +1,226 @@
+version: "1.0"
+name: idol-playlist-kpi
+description: "地下アイドル楽曲の『聞かれる曲』KPI。2026-09-18時点の15曲を生成。"
+observed_at: "2026-09-18"
+population:
+  scope: "2026 sample underground-idol song catalog"
+  count: 15
+  note: "sample_metrics=true のサンプルデータ。実測ランキングではない。"
+
+definition:
+  purpose: "楽曲への関心・質問・探索行動を継続観測する"
+  score: "catalog.score"
+  ranking_direction: "desc"
+  quality: "scoreは楽曲の良さではなく、聞かれる・探される関心度を表すプロジェクト指標"
+
+kpis:
+  - id: score
+    label: "聞かれる曲スコア"
+    field: score
+    direction: max
+  - id: ask_count
+    label: "質問・問い合わせ数"
+    field: ask_count
+    direction: max
+  - id: unique_askers
+    label: "質問者ユニーク数"
+    field: unique_askers
+    direction: max
+  - id: repeat_ask_count
+    label: "再質問数"
+    field: repeat_ask_count
+    direction: max
+  - id: recent_ask_count
+    label: "直近質問数"
+    field: recent_ask_count
+    direction: max
+  - id: lyrics_view
+    label: "歌詞ページ閲覧"
+    field: lyrics_view
+    direction: max
+  - id: youtube_view
+    label: "YouTube再生数"
+    field: youtube_view
+    direction: max
+
+top_15:
+  - rank: 1
+    song_id: sample-003
+    song: "うますぎる"
+    idol: "pinponpanpon"
+    score: 97
+    ask_count: 118
+    unique_askers: 73
+    repeat_ask_count: 29
+    recent_ask_count: 42
+    lyrics_view: 2380
+    youtube_view: 22100
+    youtube_video_id: "LIZqyeTIE6Y"
+  - rank: 2
+    song_id: sample-008
+    song: "心中未遂"
+    idol: "MADOROMI-マドロミ-"
+    score: 95
+    ask_count: 113
+    unique_askers: 70
+    repeat_ask_count: 26
+    recent_ask_count: 44
+    lyrics_view: 2260
+    youtube_view: 20400
+    youtube_video_id: "vFlfDfH4O40"
+  - rank: 3
+    song_id: sample-012
+    song: "プロット。"
+    idol: "キングサリ"
+    score: 94
+    ask_count: 110
+    unique_askers: 69
+    repeat_ask_count: 24
+    recent_ask_count: 40
+    lyrics_view: 2190
+    youtube_view: 17800
+    youtube_video_id: "aOuQpvmLhGc"
+  - rank: 4
+    song_id: sample-004
+    song: "トベトベトべ"
+    idol: "兎アイズ"
+    score: 93
+    ask_count: 105
+    unique_askers: 68
+    repeat_ask_count: 22
+    recent_ask_count: 38
+    lyrics_view: 2110
+    youtube_view: 18700
+    youtube_video_id: "6EzBz332Fg0"
+  - rank: 5
+    song_id: sample-006
+    song: "Kill my ENDROLL"
+    idol: "9DayzGlitchClubTokyo"
+    score: 91
+    ask_count: 99
+    unique_askers: 64
+    repeat_ask_count: 21
+    recent_ask_count: 35
+    lyrics_view: 1940
+    youtube_view: 15600
+    youtube_video_id: "L8vvJcWxq64"
+  - rank: 6
+    song_id: sample-011
+    song: "曖昧妄想STORY-2026 ver-"
+    idol: "metarium"
+    score: 90
+    ask_count: 101
+    unique_askers: 65
+    repeat_ask_count: 20
+    recent_ask_count: 37
+    lyrics_view: 2030
+    youtube_view: 14900
+    youtube_video_id: "4CyzYdwoHO4"
+  - rank: 7
+    song_id: sample-001
+    song: "スーパーモデルでGo!!"
+    idol: "Tnaka"
+    score: 88
+    ask_count: 92
+    unique_askers: 61
+    repeat_ask_count: 18
+    recent_ask_count: 31
+    lyrics_view: 1840
+    youtube_view: 12400
+    youtube_video_id: "g-ayoPyL6sY"
+  - rank: 8
+    song_id: sample-010
+    song: "A・RA・WA"
+    idol: "道玄坂69"
+    score: 86
+    ask_count: 89
+    unique_askers: 59
+    repeat_ask_count: 17
+    recent_ask_count: 33
+    lyrics_view: 1760
+    youtube_view: 10100
+    youtube_video_id: "yAIrcsxAIJw"
+  - rank: 9
+    song_id: sample-005
+    song: "Cry (2026 Remastered)"
+    idol: "LEIWAN"
+    score: 84
+    ask_count: 84
+    unique_askers: 57
+    repeat_ask_count: 16
+    recent_ask_count: 29
+    lyrics_view: 1710
+    youtube_view: 11300
+    youtube_video_id: "GnCzzCCXpF0"
+  - rank: 10
+    song_id: sample-013
+    song: "ギミックアイ"
+    idol: "兎アイズ"
+    score: 83
+    ask_count: 87
+    unique_askers: 55
+    repeat_ask_count: 15
+    recent_ask_count: 30
+    lyrics_view: 1680
+    youtube_view: 12400
+    youtube_video_id: "U4pK3q7XHZE"
+  - rank: 11
+    song_id: sample-002
+    song: "スクールクーデター"
+    idol: "生まれつきヒロイン"
+    score: 81
+    ask_count: 76
+    unique_askers: 49
+    repeat_ask_count: 14
+    recent_ask_count: 27
+    lyrics_view: 1620
+    youtube_view: 9800
+    youtube_video_id: "7FTrestWJdE"
+  - rank: 12
+    song_id: sample-014
+    song: "にゃんだふる"
+    idol: "ねことば"
+    score: 79
+    ask_count: 74
+    unique_askers: 48
+    repeat_ask_count: 13
+    recent_ask_count: 26
+    lyrics_view: 1490
+    youtube_view: 9200
+    youtube_video_id: "WEzke0MiXLo"
+  - rank: 13
+    song_id: sample-007
+    song: "FUTURE MASI MASSIVE"
+    idol: "AFTERS"
+    score: 78
+    ask_count: 71
+    unique_askers: 47
+    repeat_ask_count: 12
+    recent_ask_count: 25
+    lyrics_view: 1430
+    youtube_view: 8700
+    youtube_video_id: "ye4RlfoaNOc"
+  - rank: 14
+    song_id: sample-015
+    song: "Colorful Magic"
+    idol: "擬人化にゃんた"
+    score: 75
+    ask_count: 68
+    unique_askers: 45
+    repeat_ask_count: 10
+    recent_ask_count: 23
+    lyrics_view: 1360
+    youtube_view: 8100
+    youtube_video_id: "YAnBzIUaqqg"
+  - rank: 15
+    song_id: sample-009
+    song: "終わらない歌 (cover)"
+    idol: "THE+BETH"
+    score: 72
+    ask_count: 63
+    unique_askers: 42
+    repeat_ask_count: 11
+    recent_ask_count: 21
+    lyrics_view: 1210
+    youtube_view: 6900
+    youtube_video_id: "L7-aiJwBcnM"
