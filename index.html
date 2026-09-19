@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#111">
 <title>アイドルプレイリスト</title>
+<script>window.GA4_MEASUREMENT_ID="G-XXXXXXXXXX";</script>
+<script src="./analytics.js" defer></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#121212;color:#fff;font-family:Arial,sans-serif}
@@ -78,10 +80,11 @@ tracks.innerHTML=songs.map((s,i)=>`<article class="track" data-i="${i}">
 function select(i){
 current=(i+songs.length)%songs.length;
 const s=songs[current];
+window.track?.("select_song",{song_name:s[0],artist_name:s[1],position:current+1});
 document.getElementById("player").innerHTML=`<iframe src="https://www.youtube.com/embed/${s[2]}?autoplay=1" title="${s[0]}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe><div class="now"><strong>${s[0]}</strong><span>${s[1]}</span></div>`;
 }
-tracks.addEventListener("click",e=>{const t=e.target.closest(".track");if(t&&!e.target.closest("a"))select(+t.dataset.i)});
-document.getElementById("play").onclick=()=>select(current);
+tracks.addEventListener("click",e=>{const link=e.target.closest("a"); if(link){const t=e.target.closest(".track"); if(t) window.track?.("youtube_click",{song_name:songs[+t.dataset.i][0],artist_name:songs[+t.dataset.i][1]}); return;} const t=e.target.closest(".track");if(t)select(+t.dataset.i)});
+document.getElementById("play").onclick=()=>{window.track?.("play_song",{song_name:songs[current][0],artist_name:songs[current][1]});select(current)};
 document.getElementById("prev").onclick=()=>select(current-1);
 document.getElementById("next").onclick=()=>select(current+1);
 render();
