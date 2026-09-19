@@ -1,0 +1,39 @@
+version: "1"
+name: idol-playlist
+kind: tool-contract
+purpose: "音楽・アイドル観測データをランキング、集計、playlistへ変換する"
+transport:
+  primary: "GitHub artifact / JSON"
+  optional: "CLI"
+inputs:
+  catalog: "song-level observation records"
+  rankings: "dated ranking records"
+outputs:
+  weekly: "weekly ranking artifact"
+  monthly: "monthly aggregate artifact"
+  playlist: "YouTube playlist candidate artifact"
+tools:
+  - name: collect
+    input: catalog-source
+    output: observations
+  - name: rank
+    input: observations
+    output: dated-ranking
+  - name: aggregate
+    input: dated-ranking
+    output: weekly-and-monthly
+  - name: youtube-match
+    input: ranking
+    output: youtube-candidates
+  - name: playlist
+    input: youtube-candidates
+    output: playlist
+  - name: run
+    input: all-available-inputs
+    output: pipeline-artifacts
+boundary:
+  owns: ["playlist-oriented aggregation"]
+  does_not_own: ["general idol research", "general music data science", "GA4 collection"]
+interop:
+  contract: "JSON first; no shared Python imports required"
+  consumer: "Any repository can consume output artifacts by URL, downloaded JSON, or API"
