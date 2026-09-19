@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>アイドルベストテン ラジオ</title>
+<script>window.GA4_MEASUREMENT_ID="G-XXXXXXXXXX";</script>
+<script src="./analytics.js" defer></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#111;color:#ddd;font:18px Arial,sans-serif}
 main{max-width:900px;margin:auto;padding:28px 20px 60px}
@@ -21,7 +23,7 @@ a{color:#fff}.back{display:inline-block;margin-bottom:24px}
 <div class="lead">AI番組をMP3で聴く。10秒ごとの区切りでも再生できます。</div>
 <section class="player">
 <b>▶ 60秒ラジオ 本編</b>
-<audio controls preload="metadata" src="data/audio/test-60s.mp3"></audio>
+<audio id="radio-main" controls preload="metadata" src="data/audio/test-60s.mp3"></audio>
 </section>
 <section class="segments" aria-label="10秒セグメント">
 <div class="segment">
@@ -50,5 +52,6 @@ a{color:#fff}.back{display:inline-block;margin-bottom:24px}
 </div>
 </section>
 </main>
+<script>document.getElementById("radio-main")?.addEventListener("play",()=>window.track?.("radio_play",{duration:"60s"})); document.querySelectorAll(".segment audio").forEach((a)=>a.addEventListener("play",()=>window.track?.("radio_segment_play",{segment:a.closest(".segment")?.querySelector("strong")?.textContent||""})));</script>
 </body>
 </html>
