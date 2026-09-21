@@ -25,6 +25,14 @@ jobs:
       - run: aw run
       - name: Generate 60-second test radio
         run: aw radio-test
+        env:
+          SAKURA_API_KEY: ${{ secrets.SAKURA_API_KEY }}
+      - name: Push YouTube playlist and Short
+        run: aw yt-push
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
       - name: Upload radio artifact
         uses: actions/upload-artifact@v4
         with:
@@ -38,7 +46,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rankings data/weekly data/monthly data/youtube/playlist.json data/audio/test-60s.mp3 data/audio/test-60s/
+          git add data/rankings data/weekly data/monthly data/youtube/playlist.json data/youtube/playlist_id.txt data/audio/test-60s.mp3 data/audio/test-60s/
           if git diff --cached --quiet; then
             echo "No generated changes."
           else

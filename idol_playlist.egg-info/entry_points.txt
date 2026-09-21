@@ -1,0 +1,2 @@
+[console_scripts]
+aw = app.cli:main
