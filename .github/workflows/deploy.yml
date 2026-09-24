@@ -26,12 +26,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Install
         run: pip install -e .
       - name: Migrate Django
         run: python manage.py migrate --noinput
       - name: Generate playlist data
         run: aw run
+      - name: Generate radio MP3
+        run: aw radio-test
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
