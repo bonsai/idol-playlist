@@ -10,9 +10,7 @@
 *{box-sizing:border-box}body{margin:0;background:#111;color:#ddd;font:18px Arial,sans-serif}
 main{max-width:900px;margin:auto;padding:28px 20px 60px}
 h1{color:#fff;font-size:36px;margin:0 0 8px}.lead{color:#aaa;margin-bottom:28px}
-.player{background:#202020;border-radius:12px;padding:20px;margin-bottom:24px}.player b{display:block;color:#fff;font-size:22px;margin-bottom:12px}.player audio{width:100%;height:52px}
-.segments{display:grid;gap:12px}.segment{background:#1d1d1d;border:1px solid #333;border-radius:10px;padding:16px}
-.segment strong{display:block;color:#fff;font-size:20px;margin-bottom:10px}.segment audio{width:100%;height:46px}
+.player{background:#202020;border-radius:12px;padding:24px;margin-bottom:24px}.player b{display:block;color:#fff;font-size:24px;margin-bottom:14px}.player audio{width:100%;height:56px}
 a{color:#fff}.back{display:inline-block;margin-bottom:24px}
 </style>
 </head>
@@ -20,38 +18,12 @@ a{color:#fff}.back{display:inline-block;margin-bottom:24px}
 <main>
 <a class="back" href="./">← ランキングへ</a>
 <h1>🎙 アイドルベストテン ラジオ</h1>
-<div class="lead">AI番組をMP3で聴く。10秒ごとの区切りでも再生できます。</div>
+<div class="lead">AI番組を1本のMP3で聴けます。</div>
 <section class="player">
 <b>▶ 60秒ラジオ 本編</b>
 <audio id="radio-main" controls preload="metadata" src="data/audio/test-60s.mp3"></audio>
 </section>
-<section class="segments" aria-label="10秒セグメント">
-<div class="segment">
-<strong>00:00 – 00:10</strong>
-<audio controls preload="metadata" src="data/audio/test-60s/00-10.mp3"></audio>
-</div>
-<div class="segment">
-<strong>00:10 – 00:20</strong>
-<audio controls preload="metadata" src="data/audio/test-60s/10-20.mp3"></audio>
-</div>
-<div class="segment">
-<strong>00:20 – 00:30</strong>
-<audio controls preload="metadata" src="data/audio/test-60s/20-30.mp3"></audio>
-</div>
-<div class="segment">
-<strong>00:30 – 00:40</strong>
-<audio controls preload="metadata" src="data/audio/test-60s/30-40.mp3"></audio>
-</div>
-<div class="segment">
-<strong>00:40 – 00:50</strong>
-<audio controls preload="metadata" src="data/audio/test-60s/40-50.mp3"></audio>
-</div>
-<div class="segment">
-<strong>00:50 – 00:60</strong>
-<audio controls preload="metadata" src="data/audio/test-60s/50-60.mp3"></audio>
-</div>
-</section>
 </main>
-<script>document.getElementById("radio-main")?.addEventListener("play",()=>window.track?.("radio_play",{duration:"60s"})); document.querySelectorAll(".segment audio").forEach((a)=>a.addEventListener("play",()=>window.track?.("radio_segment_play",{segment:a.closest(".segment")?.querySelector("strong")?.textContent||""})));</script>
+<script>document.getElementById("radio-main")?.addEventListener("play",()=>window.track?.("radio_play",{duration:"60s"}));</script>
 </body>
 </html>
