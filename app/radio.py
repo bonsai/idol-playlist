@@ -1,13 +1,11 @@
-"""Generate playable radio artifacts from saved talk scripts."""
+"""Generate a single playable radio MP3 from the saved talk script."""
 
 from pathlib import Path
 import json
 import os
 import re
-import shutil
 import subprocess
 import tempfile
-import urllib.error
 import urllib.request
 import wave
 
@@ -15,7 +13,6 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "data/programs/test/talk-script-60s.md"
 OUTPUT_DIR = ROOT / "data/audio"
 OUTPUT = OUTPUT_DIR / "test-60s.mp3"
-SEGMENT_DIR = OUTPUT_DIR / "test-60s"
 
 TTS_URL = os.environ.get(
     "VOICEVOX_API_URL", "https://api.ai.sakura.ad.jp/v1/audio/speech"
@@ -60,12 +57,7 @@ def _synthesize(text: str) -> bytes:
     if not api_key:
         raise RuntimeError("SAKURA_API_KEY is not set")
     payload = json.dumps(
-        {
-            "model": TTS_MODEL,
-            "input": text,
-            "voice": TTS_VOICE,
-            "response_format": "wav",
-        },
+        {"model": TTS_MODEL, "input": text, "voice": TTS_VOICE, "response_format": "wav"},
         ensure_ascii=False,
     ).encode("utf-8")
     req = urllib.request.Request(
@@ -97,64 +89,21 @@ def _concatenate_wav(chunks: list[bytes], output: Path) -> None:
                 os.remove(tmp)
 
 
-def _ensure_ffmpeg() -> None:
-    if shutil.which("ffmpeg") is None:
-        raise RuntimeError("ffmpeg is required to generate 10-second radio segments")
-
-
-def _split_into_10_second_segments(source: Path) -> None:
-    _ensure_ffmpeg()
-    SEGMENT_DIR.mkdir(parents=True, exist_ok=True)
-
-    with tempfile.TemporaryDirectory() as tmp:
-        padded = Path(tmp) / "padded.mp3"
-        subprocess.run(
-            [
-                "ffmpeg", "-y", "-i", str(source),
-                "-af", "apad=pad_dur=60", "-t", "60",
-                "-c:a", "libmp3lame", "-b:a", "128k", str(padded),
-            ],
-            check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        for start in range(0, 60, 10):
-            output = SEGMENT_DIR / f"{start:02d}-{start + 10:02d}.mp3"
-            subprocess.run(
-                [
-                    "ffmpeg", "-y", "-ss", str(start), "-i", str(padded),
-                    "-t", "10", "-c:a", "libmp3lame", "-b:a", "128k",
-                    str(output),
-                ],
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-
-
 def generate_test_radio() -> str:
     if not SCRIPT.exists():
         raise FileNotFoundError(f"talk script not found: {SCRIPT}")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    text = _script_to_text(SCRIPT)
-    chunks = _split_text(text)
-    wavs = []
-    for i, chunk in enumerate(chunks):
-        wavs.append(_synthesize(chunk))
+    wavs = [_synthesize(chunk) for chunk in _split_text(_script_to_text(SCRIPT))]
 
     with tempfile.TemporaryDirectory() as tmp:
         merged = Path(tmp) / "merged.wav"
         _concatenate_wav(wavs, merged)
         subprocess.run(
-            [
-                "ffmpeg", "-y", "-i", str(merged),
-                "-c:a", "libmp3lame", "-b:a", "128k", str(OUTPUT),
-            ],
+            ["ffmpeg", "-y", "-i", str(merged), "-c:a", "libmp3lame", "-b:a", "128k", str(OUTPUT)],
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-    _split_into_10_second_segments(OUTPUT)
     return str(OUTPUT.relative_to(ROOT))
 
 
